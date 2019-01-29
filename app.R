@@ -166,17 +166,17 @@ tags$style("html, body {overflow: visible !important;"),
                                             uiOutput("xval3"),
                                             helpText("Select values of tuning Parameters"),
                                             conditionalPanel(condition="input.modeltotrain == 'rpart'",
-                                                             pickerInput(inputId = "cpval", label = "Select cp-Value",
+                                                             pickerInput(inputId = "cpval", label = "Select cp-Value (at least 2)",
                                                                          choices = c(0.0001, 0.001, 0.005,0.01,0.02,0.05,0.1,0.2,0.3,0.5), options = list(`actions-box` = TRUE),
                                                                          multiple = TRUE)
                                             ),
                                             conditionalPanel(condition="input.modeltotrain == 'svmLinear'",
-                                                             pickerInput(inputId = "cost", label = "Select Cost",
+                                                             pickerInput(inputId = "cost", label = "Select Cost (at least 2)",
                                                                          choices = c(0.1,0.25,0.5,0.75, 1, 1.25,2), options = list(`actions-box` = TRUE),
                                                                          multiple = TRUE)
                                             ),
                                             conditionalPanel(condition="input.modeltotrain == 'gbm'",
-                                                             pickerInput(inputId = "n.trees", label = "Select n.trees",
+                                                             pickerInput(inputId = "n.trees", label = "Select n.trees (at least 2)",
                                                                          choices = c("0 to 50", "0 to 100","0 to 200"), options = list(`actions-box` = TRUE),
                                                                          multiple = TRUE),
                                                              pickerInput(inputId = "interaction.depth", label = "Select interaction.depth",
@@ -757,12 +757,13 @@ server <- function(input, output, session) {
     if(is.null(values$dfTrain)) {return()}
     list(hr(),
          helpText(""),
-         selectInput("yval3", "Select Target Value", choices=nmdfTrain())
+         selectInput("yval3", "Select Target Value", choices=names(values$dfTrain))
     )
   })
   
   nmdfTrain <- reactive({
-    names(values$dfTrain)
+    req(input$yval3)
+    names(values$dfTrain)[!(names(values$dfTrain) %in% input$yval3)]
   })
   
   output$xval3  <- renderUI({
