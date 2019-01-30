@@ -460,17 +460,17 @@ server <- function(input, output, session) {
       boxplot(as.numeric(as.factor(hist_df[[input$datatab_columns_selected]])), main =mainname, xlab="", col = "#75AADB", border = "grey", outcol=c("red"))
     }else{
       if(class(hist_df[[input$datatab_columns_selected]])=="character"){
-        bins <- seq(min(as.numeric(as.factor(hist_df[[input$datatab_columns_selected]]))), max(as.numeric(as.factor(hist_df[[input$datatab_columns_selected]]))), length.out = input$bins + 1)
+        bins <- seq(min(as.numeric(as.factor(hist_df[[input$datatab_columns_selected]])), na.rm =TRUE), max(as.numeric(as.factor(hist_df[[input$datatab_columns_selected]])), na.rm =TRUE), length.out = input$bins + 1)
         hist(as.numeric(as.factor(hist_df[[input$datatab_columns_selected]])), main =mainname, xlab="", breaks = bins, col = "#75AADB", border = "grey",warn.unused = TRUE)
         boxplot(as.numeric(as.factor(hist_df[[input$datatab_columns_selected]])), main =mainname, xlab="", col = "#75AADB", border = "grey", outcol=c("red"))
       }
       if(class(hist_df[[input$datatab_columns_selected]])=="factor"){
-        bins <- unique(seq(min(as.numeric(hist_df[[input$datatab_columns_selected]])), max(as.numeric(hist_df[[input$datatab_columns_selected]])), length.out = input$bins + 1))
+        bins <- unique(seq(min(as.numeric(hist_df[[input$datatab_columns_selected]]), na.rm =TRUE), max(as.numeric(hist_df[[input$datatab_columns_selected]]), na.rm =TRUE), length.out = input$bins + 1))
         hist(as.numeric(hist_df[[input$datatab_columns_selected]]), main =mainname, xlab="", breaks = bins, col = "#75AADB", border = "grey",warn.unused = TRUE)
         boxplot(as.numeric(hist_df[[input$datatab_columns_selected]]), main =mainname, xlab="", col = "#75AADB", border = "grey", outcol=c("red"))
       }
       if(class(hist_df[[input$datatab_columns_selected]])=="integer" || class(hist_df[[input$datatab_columns_selected]])=="numeric"){
-        bins <- seq(min(hist_df[[input$datatab_columns_selected]]), max(hist_df[[input$datatab_columns_selected]]), length.out = input$bins + 1)
+        bins <- seq(min(hist_df[[input$datatab_columns_selected]], na.rm =TRUE), max(hist_df[[input$datatab_columns_selected]], na.rm =TRUE), length.out = input$bins + 1)
         hist(hist_df[[input$datatab_columns_selected]], main =mainname, xlab="", breaks = bins, col = "#75AADB", border = "grey", warn.unused = TRUE)
         boxplot(hist_df[[input$datatab_columns_selected]], main =mainname, xlab="", col = "#75AADB", border = "grey", outcol=c("red"))
       }
@@ -481,7 +481,7 @@ server <- function(input, output, session) {
           boxplot(as.numeric(as.factor(hist_df[[input$datatab_columns_selected]])), main =mainname, xlab="", col = "#75AADB", border = "grey", outcol=c("red"))
         }
         if(class(hist_df[[input$datatab_columns_selected]])=="integer" || class(hist_df[[input$datatab_columns_selected]])=="numeric"){
-          bins <- seq(min(hist_df[[input$datatab_columns_selected]]), max(hist_df[[input$datatab_columns_selected]]), length.out = input$bins + 1)
+          bins <- seq(min(hist_df[[input$datatab_columns_selected]], na.rm =TRUE), max(hist_df[[input$datatab_columns_selected]], na.rm =TRUE), length.out = input$bins + 1)
           hist(hist_df[[input$datatab_columns_selected]], main =mainname, xlab="",breaks = bins, col = "#75AADB", border = "grey", warn.unused = TRUE)
           boxplot(hist_df[[input$datatab_columns_selected]], main =mainname, xlab="", col = "#75AADB", border = "grey", outcol=c("red"))
         }
