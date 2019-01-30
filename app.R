@@ -46,7 +46,7 @@ tags$style("html, body {overflow: visible !important;"),
                           conditionalPanel(condition="input.conditionedPanels1 == 'Database'",
                             fileInput("file","Upload the file", multiple = TRUE),
                             helpText("Default max. file size is 10MB"),
-                            helpText("Select the read.table parameters below"),
+                            helpText("Select parameters for upload below"),
                             checkboxInput(inputId = 'header', label = 'Header', value = TRUE),
                             checkboxInput(inputId = "stringAsFactors", "stringAsFactors", FALSE),
                             radioButtons(inputId = 'sep', label = 'Separator', choices = c(Comma=',',Semicolon=';',Tab='\t', Space=''), selected = ','),
@@ -542,21 +542,24 @@ server <- function(input, output, session) {
   
   # Log Transformation
   observeEvent(input$applyLog, {
-    if(input$power==1){
+    if(class(values$dfWorking[,as.numeric(input$datatab_columns_selected)])=="numeric"){
+      if(input$power==1){
       values$dfWorking[,as.numeric(input$datatab_columns_selected)] <- log(values$dfWorking[,as.numeric(input$datatab_columns_selected)], 
                                                                            (max(values$dfWorking[,as.numeric(input$datatab_columns_selected)])
                                                                             -min(values$dfWorking[,as.numeric(input$datatab_columns_selected)]))^1)
+      }
+      if(input$power==2){
+        values$dfWorking[,as.numeric(input$datatab_columns_selected)] <- log(values$dfWorking[,as.numeric(input$datatab_columns_selected)], 
+                                                                             (max(values$dfWorking[,as.numeric(input$datatab_columns_selected)])
+                                                                              -min(values$dfWorking[,as.numeric(input$datatab_columns_selected)]))^2)
+      }
+      if(input$power==4){
+        values$dfWorking[,as.numeric(input$datatab_columns_selected)] <- log(values$dfWorking[,as.numeric(input$datatab_columns_selected)], 
+                                                                             (max(values$dfWorking[,as.numeric(input$datatab_columns_selected)])
+                                                                              -min(values$dfWorking[,as.numeric(input$datatab_columns_selected)]))^4)
+      }
     }
-    if(input$power==2){
-      values$dfWorking[,as.numeric(input$datatab_columns_selected)] <- log(values$dfWorking[,as.numeric(input$datatab_columns_selected)], 
-                                                                           (max(values$dfWorking[,as.numeric(input$datatab_columns_selected)])
-                                                                            -min(values$dfWorking[,as.numeric(input$datatab_columns_selected)]))^2)
-    }
-    if(input$power==4){
-      values$dfWorking[,as.numeric(input$datatab_columns_selected)] <- log(values$dfWorking[,as.numeric(input$datatab_columns_selected)], 
-                                                                           (max(values$dfWorking[,as.numeric(input$datatab_columns_selected)])
-                                                                            -min(values$dfWorking[,as.numeric(input$datatab_columns_selected)]))^4)
-    }
+    
   })
   
   # Quantisierung
@@ -629,9 +632,14 @@ server <- function(input, output, session) {
       #/
       values$dfWorking[[paste(input$cons.1,input$consop,input$cons.2)]] <- values$dfWorking[[input$cons.1]]/values$dfWorking[[input$cons.2]]
     }
+    names(values$dfWorking) <- make.names(names(values$dfWorking))
+    })
     
     # Data Table
-    output$datatabCons = DT::renderDataTable(server = TRUE, selection = list(target = 'row+column'), filter = "top",{
+    output$datatabCons <- DT::renderDataTable(server = TRUE, selection = list(target = 'row+column'), filter = "top",{
+      validate(
+        need(values$dfWorking!="", "Please upload data or use example datasets")
+      )
       consVals()
     })
     
@@ -639,8 +647,6 @@ server <- function(input, output, session) {
       req(values$dfWorking)
       values$dfWorking
     })
-
-  })
   
   # FS
   output$yval2 <- renderUI({

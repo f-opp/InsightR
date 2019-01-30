@@ -62,7 +62,7 @@ This application uses the MIT-License and relies on several R-packages available
 * knitr
 * pander
 * DiagrammeR
-* datamodelr (https://github.com/bergant/datamodelr)
+* datamodelr
 * esquisse
 * onehot
 * mlbench
