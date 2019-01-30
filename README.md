@@ -12,7 +12,7 @@ The used ML-Workflow consists of 5 steps. The InsightR tool supports the tasks i
 ### Module 1
 The first step in the ML-Workflow supports the step of the task definition. Besides the definition of the task the data used in the ML-model needs to be defined. 
 
-Therefore, module 1 let's you upload several files to the "Database" of the application. Files (.csv) can be uploaded in bulk or one by one. Several options for layouting the data such as the delimiter, the header and the transformation of features of type string to factors can be set prior to the upload.
+Therefore, module 1 let's you upload several files to the "Database" of the application. Files (.csv) can be uploaded in bulk or one by one. Several options for layouting the data such as the delimiter, the header and the transformation of features of type string to factors can be set prior to the upload. The uploaded datatables should have at least 150 observations.
 
 In the *"Database"-tab* an Entity-Relation-Diagram of the current Database containing all the uploaded files is provided.
 
@@ -34,7 +34,7 @@ The *"Feature-Engineering"-tab* offers differen options for edition the data. Se
 
 The *"Feature-Construction"-tab* helps the user to create new interaction features from the available features in the dataset. Currently addition, substraction, multiplication and division of features is possible.
 
-The *"Feature-Selection"-tab* provides insights on the importance of features towards a target feature. Therefore, a plot shows the relative importance of the features which are chose by the user. Following this step the user can devide the dataset in the training and test dataset.
+The *"Feature-Selection"-tab* provides insights on the importance of features towards a target feature. Therefore, a plot shows the relative importance of the features which are chose by the user. Following this step the user can devide the dataset in the training and test dataset. The dependent features (espacially categorical variables) should be selected carefully since every single factor is considered by the variable importance model. 
 ### Module 3
 The third step in the ML-Workflow serves to choose a ML-model according to the requirements of the task itself and the user of the final model.
 
@@ -47,13 +47,14 @@ The third step in the ML-Workflow serves to choose a ML-model according to the r
 ### Module 4
 The fourth and fith step of the ML-workflow serve to search for the best fitting ML-model for the task. 
 
-Therefore the *"Training and Tuning"-tab* helps the user to select the target variable and the independent variables, as well as the hyperparameters for tuning the model. The UI on the right shows the outcome of the training in a dotplot. When clicking on the evaluation button the accuracy of the ML-model based on the test dataset is determined. The best ML-model is automatically saved for the next step.
+Therefore the *"Training and Tuning"-tab* helps the user to select the target variable and the independent variables, as well as the hyperparameters for tuning the model. The UI on the right shows the outcome of the training in a dotplot. When clicking on the evaluation button the accuracy of the ML-model based on the test dataset is determined. The best ML-model is automatically saved for the next step. Features/columns containings "NAs" will be omittedby the model.
 
 In the *"Exploration"-tab* the user can explore the predictions of the trained ML-model by varying the input values to the model. Addtional insights based on the ML-model (e.g tree structure of the model) are shown in the right panel as well.
 ### License and used r-packages
 This application uses the MIT-License and relies on several R-packages available on CRAN and on gitHub. The following packages need to be installed:
 
 * shiny
+* titanic
 * PerformanceAnalytics
 * tabplot
 * mvtsplot
@@ -83,6 +84,7 @@ This application uses the MIT-License and relies on several R-packages available
 * markdown
 * gbm
 * randomForest
+
 
 ### Roadmap
 * Rpartplot (done: 26.01.2019)

@@ -28,6 +28,7 @@ library(e1071)
 library(randomForest)
 library(gbm)
 library(markdown)
+library(titanic)
 
 #modules
 source("modules/download.R")
@@ -239,7 +240,7 @@ server <- function(input, output, session) {
   
   observeEvent(input$applyExample,{
     reactdf$dflist[["Iris Dataset"]] <- iris
-    reactdf$dflist[["mtcars Dataset"]] <- mtcars
+    reactdf$dflist[["Titanic Dataset"]] <- titanic_train
   })
   
   output$selectfile <- renderUI({
@@ -655,7 +656,7 @@ server <- function(input, output, session) {
     
     pickerInput(inputId = "xval2", 
                 label = "Select the Independent Variable(s)", 
-                choices = names(values$dfWorking), options = list(`actions-box` = TRUE), 
+                choices = names(values$dfWorking[!(names(values$dfWorking) %in% input$yval2)]), options = list(`actions-box` = TRUE), 
                 multiple = TRUE)
     
   })
@@ -675,7 +676,7 @@ server <- function(input, output, session) {
     xval2_be <- toString(gsub(",","+",toString(input$xval2)))
     formula_model <- as.formula(paste(input$yval2, ' ~ ',  xval2_be))
     # train model
-    model <- train(formula_model, data=values$dfWorking, method = "rpart", trControl = control, na.action = na.pass)
+    model <- train(formula_model, data=values$dfWorking, method = "rpart", trControl = control, na.action = na.omit)
     # varimp
     importance <- varImp(model, scale=FALSE)
     varImp(model)$importance %>% 
@@ -794,7 +795,7 @@ server <- function(input, output, session) {
       modellist.cart <- list()
         for (cp in input$cpval){
           grid <- expand.grid(cp=cp)
-          fit.cart <- train(formula_model, data=isolate(values$dfTrain) , method=input$modeltotrain , tuneGrid = grid)
+          fit.cart <- train(formula_model, data=isolate(values$dfTrain) , method=input$modeltotrain , tuneGrid = grid, na.action = na.omit)
           key <- paste("cp :", toString(cp))
           modellist.cart[[key]] <- fit.cart
         
@@ -806,7 +807,7 @@ server <- function(input, output, session) {
       modellist.svmRad <- list()
         for (cost in input$cost){
           grid <- expand.grid(cost = cost)
-          fit.svm <- train(formula_model,data= isolate(values$dfTrain) , method="svmLinear2", tuneGrid = grid)
+          fit.svm <- train(formula_model,data= isolate(values$dfTrain) , method="svmLinear2", tuneGrid = grid, na.action = na.omit)
           key <- paste("C:", toString(cost))
           modellist.svmRad[[key]] <- fit.svm
           
@@ -825,7 +826,7 @@ server <- function(input, output, session) {
           for (shrinkage in input$shrinkage){
             for (n.minobsinnode in input$n.minobsinnode){
               grid <- expand.grid(.n.trees = n.trees.tune[, (names(n.trees.tune) %in% input$n.trees)], .interaction.depth = interaction.depth, .shrinkage=shrinkage, .n.minobsinnode=n.minobsinnode)
-              fit.gbm <- train(formula_model, data = isolate(values$dfTrain) , method="gbm", verbose = FALSE)
+              fit.gbm <- train(formula_model, data = isolate(values$dfTrain) , method="gbm", verbose = FALSE, na.action = na.omit)
               key <- paste("N.Trees:", toString(n.trees), "I.Depth", toString(interaction.depth),"Shrinkage", toString(shrinkage), "n.Minobsinnode", toString(n.minobsinnode) )
               modellist.gbm[[key]] <- fit.gbm
             }
@@ -843,7 +844,12 @@ server <- function(input, output, session) {
     )
     
     dplot <- dotplot(resamples(values$modellist), par.settings = my.settings)
-    values$bestModell <- values$modellist[[levels(dplot$panel.args[[1]]$y)[1]]]
+    if(values$modellist[[levels(dplot$panel.args[[1]]$y)[1]]]$modelType=="Classification"){
+      values$bestModell <- values$modellist[[levels(dplot$panel.args[[1]]$y)[tail(dplot$panel.args[[1]]$y, n = 1)]]]
+    }
+    if(values$modellist[[levels(dplot$panel.args[[1]]$y)[1]]]$modelType=="Regression"){
+      values$bestModell <- values$modellist[[levels(dplot$panel.args[[1]]$y)[1]]]
+    }
     dplot
   })
   
