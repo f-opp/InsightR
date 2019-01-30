@@ -951,7 +951,13 @@ server <- function(input, output, session) {
   })
   
   rpartplot.1 <-   eventReactive(input$applyTrain,{
-    rpart.plot(isolate(values$bestModell$finalModel))
+    if(values$bestModell$modelType=="Classification"){
+      rpart.plot(isolate(values$bestModell$finalModel), box.palette = "Blues")
+    }
+    if(values$bestModell$modelType=="Regression"){
+      rpart.plot(isolate(values$bestModell$finalModel))
+    }
+    
   })
   
   
