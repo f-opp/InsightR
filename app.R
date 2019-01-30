@@ -109,13 +109,13 @@ tags$style("html, body {overflow: visible !important;"),
                                          radioButtons(inputId = 'stand', label = 'Standardisierung und Normalisierung', choices = c("Standardisierung"=1, "Normalisierung 0-1" =2), selected = 2),
                                          actionButton("applyStand", "Apply")
                         ),
-                        conditionalPanel(condition="input.conditionedPanels2 == 'Feature-Konstruktion'",
+                        conditionalPanel(condition="input.conditionedPanels2 == 'Feature-Construction'",
                                          uiOutput("cons.1"),
                                          radioButtons(inputId = 'consop', label = 'Operation:', choices = c("+"=1, "-" =2, "*"=3, "/" =4), selected = 2),
                                          uiOutput("cons.2"),
                                          actionButton("applyCons", "Create New Feature")
                         ),
-                        conditionalPanel(condition="input.conditionedPanels2 == 'Feature-Selektion'",
+                        conditionalPanel(condition="input.conditionedPanels2 == 'Feature-Selection'",
                                          uiOutput("yval2"),
                                          uiOutput("xval2"),
                                          actionButton("applySelec", "Apply Feature-Selection"),
@@ -133,8 +133,8 @@ tags$style("html, body {overflow: visible !important;"),
                       mainPanel(
                         tabsetPanel(
                           tabPanel("Feature-Engineering", h4("Dataset"),br(), DT::dataTableOutput('datatab'),h4("Histogram and Boxplot"),br(), plotOutput("Hist")),             
-                          tabPanel("Feature-Konstruktion", h4("Dataset"),br(), DT::dataTableOutput('datatabCons')),
-                          tabPanel("Feature-Selektion",h4("Variable Importance"),br(), plotOutput("varImp"), h4("Train dataset"),br(),DT::dataTableOutput("datatabtrain")),
+                          tabPanel("Feature-Construction", h4("Dataset"),br(), DT::dataTableOutput('datatabCons')),
+                          tabPanel("Feature-Selection",h4("Variable Importance"),br(), plotOutput("varImp"), h4("Train dataset"),br(),DT::dataTableOutput("datatabtrain")),
                           id = "conditionedPanels2"
                         ))
                     )
@@ -160,7 +160,7 @@ tags$style("html, body {overflow: visible !important;"),
               tabPanel("Module 4",
                        sidebarLayout(
                          sidebarPanel(
-                           conditionalPanel(condition="input.conditionedPanels4 == 'Modellauswahl und Training'",
+                           conditionalPanel(condition="input.conditionedPanels4 == 'Training, Tuning and Evaluation'",
                                             uiOutput("modelchoice4"), 
                                             hr(),
                                             uiOutput("yval3"),
@@ -203,7 +203,7 @@ tags$style("html, body {overflow: visible !important;"),
                            ),
 
 
-                           conditionalPanel(condition="input.conditionedPanels4 == 'Explore'",
+                           conditionalPanel(condition="input.conditionedPanels4 == 'Exploration'",
                                             uiOutput("testout")
 
                            )
@@ -212,15 +212,15 @@ tags$style("html, body {overflow: visible !important;"),
 #-------------------------------Module 4 Main Panel-------------------------------#
                         mainPanel(
                           tabsetPanel(
-                            tabPanel("Modellauswahl und Training", h4('Training'),br(), plotOutput("eval"),h4("Evaluation"),br(), verbatimTextOutput("test")),
-                            tabPanel("Explore",h4("Adaptive prediction of trained ML-Model"),br(), tableOutput('a_out'), verbatimTextOutput("predict"), 
+                            tabPanel("Training, Tuning and Evaluation", h4('Training'),br(), plotOutput("eval"),h4("Evaluation"),br(), verbatimTextOutput("test")),
+                            tabPanel("Exploration",h4("Adaptive prediction of trained ML-Model"),br(), tableOutput('a_out'), verbatimTextOutput("predict"), 
                                      conditionalPanel(condition = "['rpart'].indexOf(input.model)>=0", h4("Tree structure"),br(), plotOutput(outputId='rpartplot'))),
                             id = "conditionedPanels4"
                           ))
                        )
               ),
              tabPanel("About",
-                      mainPanel(includeMarkdown("./resources/about.md"), width = 12
+                      mainPanel(includeMarkdown("resources/about.md"), width = 12
                       )
              )
              
@@ -697,14 +697,14 @@ server <- function(input, output, session) {
   })
   
   
-  # Selektion
+  # Selection
   observeEvent(input$applySelec, {
     namevec <- rbind(input$xval2,input$yval2)
     values$dfWorking <- values$dfWorking[ , (names(values$dfWorking) %in% namevec)]
     
   })
   
-  # Selektion
+  # Selection
   observeEvent(input$applySamp, {
     trainIndex <- createDataPartition(values$dfWorking[,1], p = input$trainsplit, 
                                       list = FALSE, times = 1)
