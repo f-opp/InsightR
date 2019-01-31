@@ -196,7 +196,7 @@ tags$style("html, body {overflow: visible !important;"),
                                             uiOutput("metric"),
                                             actionButton("applyEval", "Evaluate"),
                                             hr(),
-                                            selectInput("dataset", "Download Dataset", choices = c("bestModell", "results", "dfWorking", "dfTrain", "dfTest")),
+                                            selectInput("dataset", "Download Dataset", choices = c("best model", "Working dataset", "Train dataset", "Test dataset")),
                                             downloadObjUI(id = "download1")
 
 
@@ -285,6 +285,9 @@ server <- function(input, output, session) {
   
   #Dataset
   output$table <- DT::renderDataTable(server = TRUE, options = list(pageLength = 5),{ 
+    validate(
+      need(input$Select!="", "")
+    )
     reactdf$dflist[[input$Select]]
     
   })
@@ -966,13 +969,25 @@ server <- function(input, output, session) {
   # #Download
   my_data <- reactive({ 
     switch(input$dataset,
-           "dfWorking" = isolate(values$dfWorking),
-            "dfTrain" = isolate(values$dfTrain),
-            "dfTest" = isolate(values$dfTest))
+           "best model" = isolate(values$bestModell),
+           "Working dataset" = isolate(values$dfWorking),
+            "Train dataset" = isolate(values$dfTrain),
+            "Test dataset" = isolate(values$dfTest))
     
   })
+  my_name <- reactive({ 
+    input$dataset
+  })
   
-  callModule(downloadObj, id = "download1", data = my_data, extension = ".csv")
+  my_extension <- reactive({ 
+    ext <- ".rds"
+    if(class(my_data())=="data.frame"){
+      ext <- ".csv"
+    }
+    ext
+  })
+  
+  callModule(downloadObj, id = "download1", name = my_name, data = my_data, extension = my_extension)
   
   
 }
